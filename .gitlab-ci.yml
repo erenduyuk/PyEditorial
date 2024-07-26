@@ -6,8 +6,8 @@ stages:
 
 
 variables:
-    - IMAGE_NAME: erenduyukforinvest/pyeditorial
-    - IMAGE_TAG: test
+  - IMAGE_NAME: erenduyukforinvest/pyeditorial
+  - IMAGE_TAG: test
 
 build:
   stage: build
