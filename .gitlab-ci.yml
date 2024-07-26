@@ -13,9 +13,11 @@ build:
   stage: build
   image: docker:latest
   services:
-  - docker:dind
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
   before_script:
-    - docker login --username $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
