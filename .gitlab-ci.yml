@@ -1,0 +1,44 @@
+stages:
+  - build
+  - test
+  - deliver
+  - deploy
+
+image: docker:latest
+
+rules:
+  - if: $CI_COMMIT_BRANCH == "master"
+    when: never
+  - if: $CI_COMMIT_BRANCH != "master"
+    when: always
+
+services:
+  - docker:dind
+
+build:
+  stage: build
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+
+test:
+  stage: test
+  script:
+    - docker run -d -p 8000:80000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker ps
+    - curl http://localhost:8000
+
+deliver:
+  stage: deliver
+  script:
+    - docker run -d -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker ps
+    - curl http://localhost:8000
+
+deploy:
+  stage: deploy
+  script:
+    - docker run -d -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker ps
+    - curl http://localhost:8000
