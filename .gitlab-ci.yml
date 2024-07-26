@@ -8,7 +8,6 @@ stages:
 variables:
   IMAGE_NAME: erenduyukforinvest/pyeditorial
   IMAGE_TAG: test
-  DOCKER_DRIVER: overlay2
 
 build:
   stage: build
@@ -18,7 +17,7 @@ build:
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - echo "$DOCKER_PASSWORD" | docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
