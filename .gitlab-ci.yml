@@ -8,7 +8,6 @@ stages:
 variables:
   IMAGE_NAME: devops-erenduyuk-pyeditorial
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
-  
 
 build:
   stage: build
@@ -19,8 +18,8 @@ build:
     DOCKER_TLS_CERTDIR: "/certs"
     ECR_REGISTRY: "222237319879.dkr.ecr.eu-central-1.amazonaws.com"
   before_script:
-    - apt-get update
-    - apt-get install -y python3-pip
+    - apt update
+    - apt install -y python3-pip
     - pip3 install aws
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
   script:
