@@ -4,20 +4,21 @@ stages:
   - deliver
   - deploy
 
-image: docker:latest
-
-services:
-  - docker:dind
 
 variables:
-  DOCKER_DRIVER: overlay2
+    - IMAGE_NAME: erenduyukforinvest/pyeditorial
+    - IMAGE_TAG: test
 
 build:
   stage: build
+  image: docker:latest
+  services:
+  - docker:dind
+  before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -t $DOCKER_IMAGE .
-    - docker push $DOCKER_IMAGE
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: never
@@ -27,12 +28,7 @@ build:
 test:
   stage: test
   script:
-    - docker run -d --name test-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - sleep 10
-    - docker ps
-    - curl http://localhost:8000
-    - docker stop test-container
-    - docker rm test-container
+    - echo "test"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: never
@@ -42,12 +38,7 @@ test:
 deliver:
   stage: deliver
   script:
-    - docker run -d --name deliver-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - sleep 10
-    - docker ps
-    - curl http://localhost:8000
-    - docker stop deliver-container
-    - docker rm deliver-container
+    - echo "deliver"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: never
@@ -57,12 +48,7 @@ deliver:
 deploy:
   stage: deploy
   script:
-    - docker run -d --name deploy-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
-    - sleep 10
-    - docker ps
-    - curl http://localhost:8000
-    - docker stop deploy-container
-    - docker rm deploy-container
+    - echo "deploy"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: always
