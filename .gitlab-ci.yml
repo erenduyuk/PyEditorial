@@ -13,7 +13,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+  - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin $CI_REGISTRY
 
 build:
   stage: build
