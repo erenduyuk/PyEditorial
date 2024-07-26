@@ -6,39 +6,67 @@ stages:
 
 image: docker:latest
 
-rules:
-  - if: $CI_COMMIT_BRANCH == "master"
-    when: never
-  - if: $CI_COMMIT_BRANCH != "master"
-    when: always
-
 services:
   - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+before_script:
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
 build:
   stage: build
   script:
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME .
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: always
 
 test:
   stage: test
   script:
-    - docker run -d -p 8000:80000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker run -d --name test-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - sleep 10
     - docker ps
     - curl http://localhost:8000
+    - docker stop test-container
+    - docker rm test-container
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: always
 
 deliver:
   stage: deliver
   script:
-    - docker run -d -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker run -d --name deliver-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - sleep 10
     - docker ps
     - curl http://localhost:8000
+    - docker stop deliver-container
+    - docker rm deliver-container
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: always
 
 deploy:
   stage: deploy
   script:
-    - docker run -d -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - docker run -d --name deploy-container -p 8000:8000 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME
+    - sleep 10
     - docker ps
     - curl http://localhost:8000
+    - docker stop deploy-container
+    - docker rm deploy-container
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: never
