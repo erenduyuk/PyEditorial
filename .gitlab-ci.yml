@@ -6,7 +6,7 @@ stages:
 
 
 variables:
-  IMAGE_NAME: devops-erenduyuk-pyeditorial
+  IMAGE_NAME: 222237319879.dkr.ecr.eu-central-1.amazonaws.com/devops-erenduyuk-pyeditorial
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
 
 build:
