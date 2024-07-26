@@ -11,21 +11,15 @@ variables:
 
 build:
   stage: build
-  image: ubuntu:latest
+  image: docker:latest
   services:
     - docker:dind
   variables:
     DOCKER_TLS_CERTDIR: "/certs"
     ECR_REGISTRY: "222237319879.dkr.ecr.eu-central-1.amazonaws.com"
   before_script:
-    - apt-get update
-    - apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-    - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    - apt-get update
-    - apt-get install -y docker-ce python3-pip
-    - pip3 install awscli
-    - aws --version
+    - apk add --no-cache curl jq python3 py3-pip
+    - pip install awscli
     - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
