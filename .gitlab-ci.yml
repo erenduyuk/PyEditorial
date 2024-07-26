@@ -8,6 +8,7 @@ stages:
 variables:
   IMAGE_NAME: erenduyukforinvest/pyeditorial
   IMAGE_TAG: test
+  DOCKER_DRIVER: overlay2
 
 build:
   stage: build
