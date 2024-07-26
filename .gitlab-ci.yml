@@ -1,7 +1,6 @@
 stages:
-  - build
   - test
-  - deliver
+  - build
   - deploy
 
 
@@ -9,6 +8,16 @@ variables:
   IMAGE_NAME: $ECR_REGISTRY/devops-erenduyuk-pyeditorial
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
 
+
+test:
+  stage: test
+  script:
+    - echo "test"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: never
+    - if: $CI_COMMIT_BRANCH != "main"
+      when: always
 
 build:
   stage: build
@@ -23,26 +32,7 @@ build:
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: never
-    - if: $CI_COMMIT_BRANCH != "main"
-      when: always
-
-test:
-  stage: test
-  script:
-    - echo "test"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: never
-    - if: $CI_COMMIT_BRANCH != "main"
-      when: always
-
-deliver:
-  stage: deliver
-  script:
-    - echo "deliver"
+  when: manual
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       when: never
