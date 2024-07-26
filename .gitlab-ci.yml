@@ -15,7 +15,7 @@ build:
   services:
   - docker:dind
   before_script:
-    - docker login --username $DOCKER_USERNAME -password-stdin $DOCKER_PASSWORD
+    - docker login --username $DOCKER_USERNAME --password-stdin $DOCKER_PASSWORD
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
