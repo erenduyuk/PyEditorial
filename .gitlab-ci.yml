@@ -27,6 +27,7 @@ build:
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
+  when: never
 
 
 deploy:
@@ -36,14 +37,11 @@ deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws configure set default.region $AWS_DEFAULT_REGION
-    - eval $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD << EOF
-        docker pull $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+        $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+        docker pull $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca
         docker stop pyeditorial_web || true
         docker rm pyeditorial_web || true
-        docker run -d --name pyeditorial_web -p 80:8000 $ECR_REGISTRY/$IMAGE_NAME:$IMAGE_TAG
+        docker run -d --name pyeditorial_web -p 80:8000 $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca
       EOF
 
