@@ -38,11 +38,10 @@ deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD << EOF
-        $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
-        docker pull $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca
-        docker stop pyeditorial_web || true
-        docker rm pyeditorial_web || true
-        docker run -d --name pyeditorial_web -p 80:8000 $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca
-      EOF
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD 
+        "$(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+        && docker pull $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca
+        && docker stop pyeditorial_web || true
+        && docker rm pyeditorial_web || true
+        && docker run -d --name pyeditorial_web -p 80:8000 $ECR_REGISTRY/$IMAGE_NAME:$760bb9ca"
 
