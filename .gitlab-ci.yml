@@ -13,11 +13,7 @@ test:
   stage: test
   script:
     - echo "test"
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: never
-    - if: $CI_COMMIT_BRANCH != "main"
-      when: always
+
 
 build:
   stage: build
@@ -32,11 +28,6 @@ build:
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
-  rules:
-    - if: $CI_COMMIT_BRANCH == "main"
-      when: never
-    - if: $CI_COMMIT_BRANCH != "main"
-      when: always
   when: manual
 
 
