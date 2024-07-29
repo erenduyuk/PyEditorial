@@ -27,6 +27,7 @@ build:
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
+  allow_failure: false
 
 
 deploy_test:
@@ -62,5 +63,7 @@ deploy_prod:
       docker rm \$(docker ps -aq) && 
       docker rmi \$(docker images -q) && 
       docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main
 
 
