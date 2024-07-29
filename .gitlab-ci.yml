@@ -31,6 +31,9 @@ build:
 
 deploy:
   stage: deploy
+  image: docker:latest
+  services:
+    - docker:dind
   script:
     - echo "deploy"
     - mkdir -p ~/.ssh
