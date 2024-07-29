@@ -30,7 +30,6 @@ build:
   when: manual
 
 
-
 deploy:
   stage: deploy
   script:
