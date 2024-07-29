@@ -38,5 +38,5 @@ deploy:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD "docker ps && docker --version"
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD "docker pull $IMAGE_NAME:760bb9ca && docker images && docker run -d -p 80:8000 $IMAGE_NAME:760bb9ca"
 
