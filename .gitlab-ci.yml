@@ -13,6 +13,7 @@ test:
   stage: test
   script:
     - echo "test"
+  allow_failure: false
 
 build:
   stage: build
