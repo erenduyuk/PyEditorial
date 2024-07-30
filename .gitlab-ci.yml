@@ -34,7 +34,6 @@ build:
     - test
     - main
 
-
 deploy_test:
   stage: deploy
   script:
