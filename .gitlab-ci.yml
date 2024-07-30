@@ -1,0 +1,92 @@
+stages:
+  - test
+  - build
+  - deploy
+
+
+variables:
+  IMAGE_NAME: $ECR_REGISTRY/devops-erenduyuk-pyeditorial
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+
+
+test:
+  stage: test
+  image: python:3.9.19-slim
+  script:
+    - echo "test"
+  allow_failure: false
+
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - apk add aws-cli
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+  script:
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  allow_failure: false
+  only:
+    - test
+    - main
+
+
+deploy_test:
+  stage: deploy
+  script:
+    - echo "deploy"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_TEST "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
+      docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop \$(docker ps -aq) && 
+      docker rm \$(docker ps -aq) && 
+      docker rmi \$(docker images -q) && 
+      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - test
+
+deploy_prod:
+  stage: deploy
+  script:
+    - echo "deploy"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
+      docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop \$(docker ps -aq) && 
+      docker rm \$(docker ps -aq) && 
+      docker rmi \$(docker images -q) && 
+      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main
+
+deploy_prod1:
+  stage: deploy
+  script:
+    - echo "deploy"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
+      docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop \$(docker ps -aq) && 
+      docker rm \$(docker ps -aq) && 
+      docker rmi \$(docker images -q) && 
+      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main
+
+
