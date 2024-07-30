@@ -37,7 +37,6 @@ build:
 
 deploy_test:
   stage: deploy
-  image: ubuntu:latest
   script:
     - echo "deploy"
     - mkdir -p ~/.ssh
@@ -56,7 +55,6 @@ deploy_test:
 
 deploy_prod:
   stage: deploy
-  image: ubuntu:latest
   script:
     - echo "deploy"
     - mkdir -p ~/.ssh
