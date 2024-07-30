@@ -71,4 +71,22 @@ deploy_prod:
   only:
     - main
 
+deploy_prod1:
+  stage: deploy
+  script:
+    - echo "deploy"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PUBLIC_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
+      docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop \$(docker ps -aq) && 
+      docker rm \$(docker ps -aq) && 
+      docker rmi \$(docker images -q) && 
+      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main
+
 
