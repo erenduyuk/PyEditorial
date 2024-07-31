@@ -37,8 +37,8 @@ deploy_test:
   image: ubuntu
   script:
     - echo "deploy"
-    - apt install update
-    - apt install ansible -y
+    - apt-get update
+    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
@@ -51,8 +51,8 @@ deploy_prod:
   image: ubuntu
   script:
     - echo "deploy"
-    - apt install update
-    - apt install ansible -y
+    - apt-get update
+    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
