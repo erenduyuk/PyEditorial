@@ -42,7 +42,7 @@ deploy_test:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ./dynamic_inventory.sh > inventory.ini
+    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
 
 deploy_prod:
@@ -55,7 +55,7 @@ deploy_prod:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ./dynamic_inventory.sh > inventory.ini
+    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
 
 
