@@ -37,6 +37,7 @@ build:
 
 deploy_test:
   stage: deploy
+  image: ubuntu
   script:
     - echo "deploy"
     - sudo apt update
