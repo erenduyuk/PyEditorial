@@ -37,11 +37,11 @@ deploy_test:
   image: ubuntu
   script:
     - echo "deploy"
-    - apt update
     - apt install ansible -y
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    - chmod +x ./ansible/dynamic_inventory.sh
     - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
 
@@ -50,11 +50,11 @@ deploy_prod:
   image: ubuntu
   script:
     - echo "deploy"
-    - apt update
     - apt install ansible -y
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    - chmod +x ./ansible/dynamic_inventory.sh
     - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
 
