@@ -39,19 +39,12 @@ deploy_test:
   stage: deploy
   script:
     - echo "deploy"
+    - sudo apt update
+    - sudo apt install ansible -y
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_TEST "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
-  only:
-    - test
+    - ansible-playbook -i inventory.ini deploy.yml
 
 deploy_prod:
   stage: deploy
