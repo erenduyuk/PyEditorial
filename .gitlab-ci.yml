@@ -46,7 +46,7 @@ deploy_test:
     - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
   only:
-    - main
+    - test
 
 deploy_prod:
   stage: deploy
@@ -61,6 +61,8 @@ deploy_prod:
     - chmod +x ./ansible/dynamic_inventory.sh
     - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
+  only:
+    - main
 
 
 
