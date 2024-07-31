@@ -42,42 +42,21 @@ deploy_test:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - ansible-playbook -i inventory.ini deploy.yml
+    - ./dynamic_inventory.sh > inventory.ini
+    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
 
 deploy_prod:
   stage: deploy
+  image: ubuntu
   script:
     - echo "deploy"
+    - apt update
+    - apt install ansible -y
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
-  only:
-    - main
+    - ./dynamic_inventory.sh > inventory.ini
+    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
 
-deploy_prod1:
-  stage: deploy
-  script:
-    - echo "deploy"
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
-  only:
-    - main
 
 
