@@ -1,5 +1,6 @@
 - name: Deploy application to production servers
-  hosts: production,production1
+  hosts: production
+  serial: 1
   become: yes
   tasks:
     - name: Log in to AWS ECR
