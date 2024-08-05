@@ -33,7 +33,6 @@ build:
   only:
     - test
     - main
-    - ansible
 
 
 deploy_test:
@@ -66,7 +65,7 @@ deploy_prod:
     - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
     - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
   only:
-    - ansible
+    - main
 
 
 
