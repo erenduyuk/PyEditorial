@@ -7,9 +7,6 @@ PyEditorial is a content management system designed to manage and publish blogs,
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Features
 
@@ -72,10 +69,10 @@ To access the admin panel, navigate to `http://127.0.0.1:8000/admin` and log in 
 Here are some screenshots of PyEditorial in action:
 
 ### Add Blog
-![Add Blog](./Screenshots/Add-Blog.png)
+![Add Blog](./Screenshots/Index.png)
 
 ### Add Podcast
-![Add Podcast](./Screenshots/Add-Podcast.png)
+![Add Podcast](./Screenshots/Blog-Single.png)
 
 ### Add Skill
 ![Add Skill](./Screenshots/Add-Skill.png)
