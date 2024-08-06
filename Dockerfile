@@ -1,4 +1,4 @@
-FROM ython:3.9.19-slim-bookworm
+FROM python:3.9.19-slim-bookworm
 
 WORKDIR /app
 
