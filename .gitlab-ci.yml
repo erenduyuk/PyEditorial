@@ -37,56 +37,35 @@ build:
 
 deploy_test:
   stage: deploy
+  image: ubuntu
   script:
     - echo "deploy"
+    - apt-get update
+    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_TEST "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+    - chmod +x ./ansible/dynamic_inventory.sh
+    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
+    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
   only:
     - test
 
 deploy_prod:
   stage: deploy
+  image: ubuntu
   script:
     - echo "deploy"
+    - apt-get update
+    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
+    - chmod +x ./ansible/dynamic_inventory.sh
+    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
+    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
   only:
     - main
 
-deploy_prod1:
-  stage: deploy
-  script:
-    - echo "deploy"
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - |
-      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
-      docker pull $IMAGE_NAME:$IMAGE_TAG && 
-      docker images && 
-      docker stop \$(docker ps -aq) && 
-      docker rm \$(docker ps -aq) && 
-      docker rmi \$(docker images -q) && 
-      docker run -d -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
-  only:
-    - main
 
 

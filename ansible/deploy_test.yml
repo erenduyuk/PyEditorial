@@ -1,0 +1,32 @@
+- name: Deploy application to test server
+  hosts: test
+  become: yes
+  tasks:
+    - name: Stop all running containers
+      shell: "docker stop $(docker ps -aq)"
+      ignore_errors: yes
+
+    - name: Remove all containers
+      shell: "docker rm $(docker ps -aq)"
+      ignore_errors: yes
+
+    - name: Remove all Docker images
+      shell: "docker rmi $(docker images -q)"
+      ignore_errors: yes
+
+    - name: Log in to AWS ECR
+      shell: "aws ecr get-login-password --region {{ lookup('env', 'AWS_DEFAULT_REGION') }} | docker login --username AWS --password-stdin {{ lookup('env', 'ECR_REGISTRY') }}"
+      register: login_result
+      ignore_errors: yes
+
+    - name: Pull the latest Docker image
+      shell: "docker pull {{ lookup('env', 'IMAGE_NAME') }}:{{ lookup('env', 'IMAGE_TAG') }}"
+      when: login_result is succeeded
+
+    - name: List Docker images
+      shell: "docker images"
+      when: login_result is succeeded
+
+    - name: Run the new Docker container
+      shell: "docker run -d -p 80:8000 {{ lookup('env', 'IMAGE_NAME') }}:{{ lookup('env', 'IMAGE_TAG') }}"
+      when: login_result is succeeded
