@@ -29,5 +29,5 @@
       when: login_result is succeeded
 
     - name: Run the new Docker container
-      shell: "docker run -d -p 80:8000 {{ lookup('env', 'IMAGE_NAME') }}:{{ lookup('env', 'IMAGE_TAG') }}"
+      shell: "docker run -d -p 80:8000 -e DJANGO_ALLOWED_HOSTS={{ ansible_default_ipv4.address }} {{ lookup('env', 'IMAGE_NAME') }}:{{ lookup('env', 'IMAGE_TAG') }}"
       when: login_result is succeeded
