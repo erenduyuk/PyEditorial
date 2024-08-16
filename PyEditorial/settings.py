@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['pyeditorial-erenduyuk-lb-1965326994.eu-central-1.elb.amazonaws.com']
 
-
 # Application definition
 
 INSTALLED_APPS = [

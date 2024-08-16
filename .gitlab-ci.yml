@@ -71,7 +71,6 @@ deploy_prod:
   only:
     - main
 
-
 deploy_prod1:
   stage: deploy
   script:
