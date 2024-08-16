@@ -26,7 +26,7 @@ SECRET_KEY = '^rz9wrbb#ig!tl)4c$!o_^01ef8(rtxe(i()$ph61$8+mh^v_8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['pyeditorial-erenduyuk-lb-1965326994.eu-central-1.elb.amazonaws.com', '*']
+ALLOWED_HOSTS = ['pyeditorial-erenduyuk-lb-1965326994.eu-central-1.elb.amazonaws.com']
 
 
 # Application definition
@@ -53,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.HealthCheckMiddleware',
 ]
 
 ROOT_URLCONF = 'PyEditorial.urls'
