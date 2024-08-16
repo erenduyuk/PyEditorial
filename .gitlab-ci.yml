@@ -63,7 +63,7 @@ deploy_prod:
     - |
       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
       PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4) &&
-      export DJANGO_ALLOWED_HOSTS=$PRIVATE_IP &&
+      export DJANGO_ALLOWED_HOSTS=$PRIVATE_IP_PROD &&
       docker pull $IMAGE_NAME:$IMAGE_TAG && 
       docker images && 
       docker stop \$(docker ps -aq) && 
@@ -83,7 +83,7 @@ deploy_prod1:
     - |
       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
       PRIVATE_IP=$(curl http://169.254.169.254/latest/meta-data/local-ipv4) &&
-      export DJANGO_ALLOWED_HOSTS=$PRIVATE_IP &&
+      export DJANGO_ALLOWED_HOSTS=$PRIVATE_IP_PROD1 &&
       docker pull $IMAGE_NAME:$IMAGE_TAG && 
       docker images && 
       docker stop \$(docker ps -aq) && 
