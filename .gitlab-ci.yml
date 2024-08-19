@@ -46,8 +46,8 @@ deploy_test:
       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_TEST "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
       docker pull $IMAGE_NAME:$IMAGE_TAG && 
       docker images && 
-      docker stop ec2_test && 
-      docker rm ec2_test && 
+      docker stop ec2_test || true && 
+      docker rm ec2_test || true && 
       docker rmi \$(docker images -q) && 
       docker run -d --name ec2_test -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
   only:
@@ -64,8 +64,8 @@ deploy_prod:
       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
       docker pull $IMAGE_NAME:$IMAGE_TAG && 
       docker images && 
-      docker stop ec2_prod && 
-      docker rm ec2_prod && 
+      docker stop ec2_prod || true && 
+      docker rm ec2_prod || true && 
       docker rmi \$(docker images -q) && 
       docker run -d --name ec2_prod -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD $IMAGE_NAME:$IMAGE_TAG"
   only:
@@ -83,8 +83,8 @@ deploy_prod1:
       ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD1 "sudo aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY && 
       docker pull $IMAGE_NAME:$IMAGE_TAG && 
       docker images && 
-      docker stop ec_prod1 && 
-      docker rm ec_prod1 && 
+      docker stop ec_prod1 || true && 
+      docker rm ec_prod1 || true && 
       docker rmi \$(docker images -q) && 
       docker run -d --name ec_prod1 -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD1 $IMAGE_NAME:$IMAGE_TAG"
   only:
