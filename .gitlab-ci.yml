@@ -67,5 +67,3 @@ deploy_prod:
   only:
     - main
 
-
-
