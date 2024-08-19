@@ -2,12 +2,12 @@
   hosts: test
   become: yes
   tasks:
-    - name: Stop all running containers
-      shell: "docker stop $(docker ps -aq)"
+    - name: Stop running container
+      shell: "docker stop {{ inventory_hostname }}"
       ignore_errors: yes
 
-    - name: Remove all containers
-      shell: "docker rm $(docker ps -aq)"
+    - name: Remove container
+      shell: "docker rm {{ inventory_hostname }}"
       ignore_errors: yes
 
     - name: Remove all Docker images
