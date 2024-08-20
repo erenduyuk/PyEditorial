@@ -11,7 +11,7 @@
       ignore_errors: yes
 
     - name: Remove all Docker images
-      shell: "docker rmi $(docker images -q)"
+      shell: "docker rmi {{ inventory_hostname }}"
       ignore_errors: yes
 
     - name: Pull the latest Docker image
