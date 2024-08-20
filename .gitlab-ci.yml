@@ -49,7 +49,7 @@ deploy_test:
       docker images && 
       docker stop ec2_test || true && 
       docker rm ec2_test || true && 
-      docker rmi \$(docker images -q) || true && 
+      docker images -q | grep $ECR_REGISTRY | xargs docker rmi || true && 
       docker run -d --name ec2_test -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
   only:
     - test
@@ -67,7 +67,7 @@ deploy_prod:
       docker images && 
       docker stop ec2_prod || true && 
       docker rm ec2_prod || true && 
-      docker rmi \$(docker images -q) || true && 
+      docker images -q | grep $ECR_REGISTRY | xargs docker rmi || true && 
       docker run -d --name ec2_prod -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD $IMAGE_NAME:$IMAGE_TAG"
   only:
     - main
@@ -86,7 +86,7 @@ deploy_prod1:
       docker images && 
       docker stop ec_prod1 || true && 
       docker rm ec_prod1 || true && 
-      docker rmi \$(docker images -q) || true && 
+      docker images -q | grep $ECR_REGISTRY | xargs docker rmi || true &&  
       docker run -d --name ec_prod1 -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD1 $IMAGE_NAME:$IMAGE_TAG"
   only:
     - main
