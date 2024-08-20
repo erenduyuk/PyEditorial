@@ -11,10 +11,7 @@
       ignore_errors: yes
 
     - name: Remove Docker images
-      shell: >
-       docker images --filter=reference="{{ lookup('env', 'IMAGE_NAME') }}:*" --format "{{ '{{.ID}}' }}" |
-       grep -v $(docker images --filter=reference="{{ lookup('env', 'IMAGE_NAME') }}:{{ lookup('env', 'IMAGE_TAG') }}" --format "{{ '{{.ID}}' }}") |
-       xargs -r docker rmi
+      shell: "docker images | grep {{ lookup('env', 'ECR_REGISTRY') }} | xargs docker rmi"
       ignore_errors: yes
 
     - name: Log in to AWS ECR
