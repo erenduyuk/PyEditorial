@@ -9,6 +9,7 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   GIT_STRATEGY: clone
 
+
 test:
   stage: test
   image: python:3.9.19-slim
@@ -25,6 +26,7 @@ build:
     DOCKER_TLS_CERTDIR: "/certs"
   before_script:
     - apk add aws-cli
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
   script:
     - docker build -t $IMAGE_NAME:$IMAGE_TAG .
     - docker push $IMAGE_NAME:$IMAGE_TAG
@@ -36,33 +38,54 @@ build:
 
 deploy_test:
   stage: deploy
-  image: ubuntu
   script:
     - echo "deploy"
-    - apt-get update
-    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - chmod +x ./ansible/dynamic_inventory.sh
-    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
-    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_test.yml
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_TEST " docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop ec2_test || true && 
+      docker rm ec2_test || true && 
+      docker rmi \$(docker images -q) || true && 
+      docker run -d --name ec2_test -p 80:8000 $IMAGE_NAME:$IMAGE_TAG"
   only:
     - test
 
 deploy_prod:
   stage: deploy
-  image: ubuntu
   script:
     - echo "deploy"
-    - apt-get update
-    - apt-get install -y ansible
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
-    - chmod +x ./ansible/dynamic_inventory.sh
-    - ./ansible/dynamic_inventory.sh > ./ansible/inventory.ini
-    - ansible-playbook -i ./ansible/inventory.ini ./ansible/deploy_prod.yml
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD "docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop ec2_prod || true && 
+      docker rm ec2_prod || true && 
+      docker rmi \$(docker images -q) || true && 
+      docker run -d --name ec2_prod -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD $IMAGE_NAME:$IMAGE_TAG"
   only:
     - main
+
+
+deploy_prod1:
+  stage: deploy
+  script:
+    - echo "deploy"
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - |
+      ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ubuntu@$EC2_PRIVATE_IP_PROD1 "docker pull $IMAGE_NAME:$IMAGE_TAG && 
+      docker images && 
+      docker stop ec_prod1 || true && 
+      docker rm ec_prod1 || true && 
+      docker rmi \$(docker images -q) || true && 
+      docker run -d --name ec_prod1 -p 80:8000 -e DJANGO_ALLOWED_HOSTS=$EC2_PRIVATE_IP_PROD1 $IMAGE_NAME:$IMAGE_TAG"
+  only:
+    - main
+
 
